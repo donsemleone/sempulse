@@ -26,8 +26,8 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ```
 
 Some Lucide icons are derived from [Feather](https://feathericons.com), MIT License,
-Copyright (c) 2013-present Cole Bemis. Of the icons Sempulse uses, `moon`, `settings`, `x`
-and `zap` belong to that set.
+Copyright (c) 2013-present Cole Bemis. Of the icons Sempulse uses, `moon` and `x`
+belong to that set.
 
 ## Open-Meteo
 

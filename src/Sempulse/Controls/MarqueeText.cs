@@ -72,6 +72,8 @@ internal sealed class MarqueeText : Border
         animation.KeyFrames.Add(new DiscreteDoubleKeyFrame(0, KeyTime.FromPercent(0.15)));
         animation.KeyFrames.Add(new EasingDoubleKeyFrame(-overflow, KeyTime.FromPercent(0.85), ease));
         animation.KeyFrames.Add(new DiscreteDoubleKeyFrame(-overflow, KeyTime.FromPercent(1)));
+        // A transparent window is redrawn in full for every frame; 24 fps keeps the slide smooth at a fraction of the cost.
+        Timeline.SetDesiredFrameRate(animation, 24);
         animation.Freeze();
         shift.BeginAnimation(TranslateTransform.XProperty, animation);
     }

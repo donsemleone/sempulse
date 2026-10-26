@@ -72,6 +72,7 @@ internal sealed class SettingsWindow : Window
         content.Children.Add(Choice("Medya kontrolü", settings.MediaMode,
             [(MediaLayout.Separate, "Spotify ve diğer medya ayrı"), (MediaLayout.Unified, "Tek aktif medya")], value => s => s with { MediaMode = value }));
         content.Children.Add(Choice("Masaüstü kedisi", settings.Pet, [(true, "Açık"), (false, "Kapalı")], value => s => s with { Pet = value }));
+        content.Children.Add(Choice("Windows ile başlat", Autostart.IsEnabled, [(true, "Açık"), (false, "Kapalı")], SetAutostart));
         if (settings.Mode == PanelMode.Bar)
             content.Children.Add(Range("Bar kalınlığı", settings.Thickness, 40, 120, " px", value => s => s with { Thickness = value }));
         content.Children.Add(Range("Floating genişliği", settings.WidgetWidth, 520, 900, " px", value => s => s with { WidgetWidth = value }));
@@ -95,7 +96,19 @@ internal sealed class SettingsWindow : Window
         return label;
     }
 
-    UIElement Choice<T>(string label, T selected, (T Value, string Text)[] options, Func<T, Func<PanelSettings, PanelSettings>> apply)
+    static void SetAutostart(bool enabled)
+    {
+        try { Autostart.Set(enabled); }
+        catch (Exception exception) when (exception is UnauthorizedAccessException or System.Security.SecurityException)
+        {
+            MessageBox.Show("Başlangıç ayarı değiştirilemedi.", "Sempulse", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+    }
+
+    UIElement Choice<T>(string label, T selected, (T Value, string Text)[] options, Func<T, Func<PanelSettings, PanelSettings>> apply) =>
+        Choice(label, selected, options, (T value) => change(apply(value)));
+
+    UIElement Choice<T>(string label, T selected, (T Value, string Text)[] options, Action<T> onSelect)
     {
         var combo = new ComboBox { Style = (Style)FindResource("DarkCombo") };
         foreach (var (value, text) in options)
@@ -107,7 +120,10 @@ internal sealed class SettingsWindow : Window
         combo.SelectionChanged += (_, _) =>
         {
             if (combo.SelectedItem is ComboBoxItem { Tag: T value } && !Equals(value, selected))
-                Dispatcher.BeginInvoke(() => change(apply(value)));
+            {
+                selected = value;
+                Dispatcher.BeginInvoke(() => onSelect(value));
+            }
         };
         var group = new StackPanel { Margin = new Thickness(0, 0, 0, 16) };
         group.Children.Add(Label(label));

@@ -14,6 +14,7 @@ internal sealed class Meter : StackPanel
     readonly Border fill;
     readonly double trackLength;
     readonly TextBlock percent;
+    double shownLength = -1;
 
     public Meter(string icon, string label, MeterStyle style, bool showPercent)
     {
@@ -68,8 +69,11 @@ internal sealed class Meter : StackPanel
         percent.Text = valid ? $"{rounded}%" : "—";
         ToolTip = $"{label}: " + (valid ? $"{rounded}%" + (detail is null ? "" : $" ({detail})") : "Ölçüm yok");
 
-        double length = trackLength * clamped / 100;
+        double length = Math.Round(trackLength * clamped / 100);
+        if (length == shownLength) return; // Same pixel: no redraw of the (transparent, fully repainted) window.
+        shownLength = length;
         var animation = new DoubleAnimation(length, TimeSpan.FromMilliseconds(300)) { EasingFunction = new QuadraticEase() };
+        Timeline.SetDesiredFrameRate(animation, 30);
         fill.BeginAnimation(style == MeterStyle.Vertical ? HeightProperty : WidthProperty, animation);
     }
 }

@@ -1,0 +1,38 @@
+name: Release
+
+# Push a tag like v2.0.0 to build, test and publish a GitHub release with the downloadable app.
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Test
+        run: dotnet test --configuration Release
+
+      - name: Publish
+        shell: pwsh
+        run: |
+          $version = "${{ github.ref_name }}".TrimStart("v")
+          dotnet publish src/Sempulse/Sempulse.csproj -c Release -r win-x64 -p:Version=$version -o out
+          New-Item -ItemType Directory -Force dist | Out-Null
+          Copy-Item LICENSE, THIRD-PARTY-NOTICES.md out/
+          Compress-Archive -Path out/* -DestinationPath "dist/Sempulse-$version-win-x64.zip"
+          Get-FileHash dist/*.zip -Algorithm SHA256 | ForEach-Object { "$($_.Hash.ToLower())  $(Split-Path $_.Path -Leaf)" } |
+            Set-Content -Encoding ascii dist/SHA256SUMS.txt
+
+      - name: Create release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "${{ github.ref_name }}" dist/* --title "Sempulse ${{ github.ref_name }}" --generate-notes

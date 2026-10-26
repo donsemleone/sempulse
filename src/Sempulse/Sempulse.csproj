@@ -1,0 +1,46 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\app-icon.ico</ApplicationIcon>
+    <RootNamespace>Sempulse</RootNamespace>
+    <AssemblyName>Sempulse</AssemblyName>
+    <Version>2.0.0</Version>
+    <Product>Sempulse</Product>
+    <Copyright>Copyright (c) 2026 donsemleone</Copyright>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <InvariantGlobalization>false</InvariantGlobalization>
+    <!-- WPF needs the per-monitor DPI declaration in the manifest; the WinForms-only alternative does not cover it. -->
+    <NoWarn>$(NoWarn);WFO0003</NoWarn>
+  </PropertyGroup>
+
+  <!-- "dotnet publish -c Release -r win-x64" produces one self-contained Sempulse.exe. Compression stays off:
+       compressed bundles are unpacked into memory and roughly double the app's RAM use. -->
+  <PropertyGroup Condition="'$(RuntimeIdentifier)' != ''">
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+
+  <!-- WPF and WinForms share type names (Application, Button, Point...); keep WinForms out of the global usings. -->
+  <ItemGroup>
+    <Using Remove="System.Windows.Forms" />
+    <Using Remove="System.Drawing" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\app-icon.ico" />
+    <InternalsVisibleTo Include="Sempulse.Tests" />
+    <InternalsVisibleTo Include="Sempulse.Screenshots" />
+  </ItemGroup>
+
+</Project>

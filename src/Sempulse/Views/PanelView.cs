@@ -59,7 +59,9 @@ internal sealed class PanelView : Border
         thin = !widget && settings.Thickness < 60;
         meterStyle = widget ? MeterStyle.Widget : vertical ? MeterStyle.Vertical : MeterStyle.Bar;
 
-        TextOptions.SetTextFormattingMode(this, TextFormattingMode.Display);
+        // Transparent windows cannot use ClearType; ideal layout with grayscale smoothing matches the old (browser) text.
+        TextOptions.SetTextFormattingMode(this, TextFormattingMode.Ideal);
+        TextOptions.SetTextRenderingMode(this, TextRenderingMode.Grayscale);
         UseLayoutRounding = true;
         bool clear = settings.Opacity == 0;
         // Never fully transparent: a 1/255 fill keeps the whole panel clickable, like the old window.

@@ -31,7 +31,9 @@ internal sealed class SettingsWindow : Window
         Width = 320;
         SizeToContent = SizeToContent.Height;
         FontFamily = Ui.Font;
-        TextOptions.SetTextFormattingMode(this, TextFormattingMode.Display);
+        // Transparent windows cannot use ClearType; ideal layout with grayscale smoothing matches the old (browser) text.
+        TextOptions.SetTextFormattingMode(this, TextFormattingMode.Ideal);
+        TextOptions.SetTextRenderingMode(this, TextRenderingMode.Grayscale);
         UseLayoutRounding = true;
 
         var close = Ui.IconButton("X", 16, "Kapat", Hide, 0);

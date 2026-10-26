@@ -69,7 +69,9 @@ public partial class App : Application, IPanelActions
             var bounds = WindowPlacement.GetBounds(panel);
             if (!isFullscreen && settings.Mode == PanelMode.Widget) savedWidget = (bounds.X, bounds.Y);
         };
-        panel.DpiChangedAfterMove += () => { if (lastLayout is { Hidden: false } layout) WindowPlacement.SetBounds(panel, layout.Bounds); };
+        panel.DpiChangedAfterMove += RestorePanelBounds;
+        // Anything outside Sempulse that resizes the window (DPI or display changes) is undone.
+        panel.SizeChanged += (_, _) => Dispatcher.BeginInvoke(RestorePanelBounds, DispatcherPriority.Background);
         panel.Show();
         ApplyLayout();
 
@@ -99,6 +101,16 @@ public partial class App : Application, IPanelActions
     {
         lastWeather = await weather.GetAsync();
         view?.UpdateWeather(lastWeather);
+    }
+
+    void RestorePanelBounds()
+    {
+        if (lastLayout is not { Hidden: false } layout || !panel.IsVisible) return;
+        var bounds = WindowPlacement.GetBounds(panel);
+        bool wrongSize = bounds.Width != layout.Bounds.Width || bounds.Height != layout.Bounds.Height;
+        bool wrongPlace = layout.EffectiveMode == PanelMode.Bar && (bounds.X != layout.Bounds.X || bounds.Y != layout.Bounds.Y);
+        if (wrongSize || wrongPlace)
+            WindowPlacement.SetBounds(panel, layout.EffectiveMode == PanelMode.Bar ? layout.Bounds : layout.Bounds with { X = bounds.X, Y = bounds.Y });
     }
 
     void OnDisplaySettingsChanged(object? sender, EventArgs e) => Dispatcher.BeginInvoke(ApplyLayout);

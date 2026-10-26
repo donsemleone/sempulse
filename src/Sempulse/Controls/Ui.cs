@@ -7,7 +7,8 @@ namespace Sempulse.Controls;
 // Small factories so the code-built panel reads like the markup it replaces.
 internal static class Ui
 {
-    public static readonly FontFamily Font = new("Segoe UI");
+    // Windows 11's small-size optical cut reads like the old browser text; Windows 10 falls back to Segoe UI.
+    public static readonly FontFamily Font = new("Segoe UI Variable Small, Segoe UI");
     public static readonly Brush Primary = Frozen(Colors.White);
     public static readonly Brush Secondary = Frozen(Color.FromRgb(0xA0, 0xA0, 0xA5));
     public static readonly Brush Accent = Frozen(Color.FromRgb(0x1D, 0xB9, 0x54));

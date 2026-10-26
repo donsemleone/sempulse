@@ -30,7 +30,7 @@ Only one instance runs at a time, so close the installed copy before running a d
 Some guidelines:
 
 - Keep Windows calls inside `Services/` and put the decisions they feed into small pure functions that can be tested.
-- The panel window is transparent, so every animation frame repaints the whole window. Keep animations rare and cap their frame rate.
+- The panel is always on screen. Keep animations rare and stop them when nothing changes, so the app stays near idle.
 - The app must never need administrator rights, and must not send anything about the user over the network.
 - The interface text is Turkish for now. If you add strings, keep them short and in the same style.
 

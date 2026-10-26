@@ -17,7 +17,9 @@ internal sealed class PanelWindow : Window
     {
         Title = "Sempulse";
         WindowStyle = WindowStyle.None;
-        AllowsTransparency = true;
+        // See-through background from the desktop compositor rather than a layered window: WPF keeps rendering
+        // on the GPU, so animations do not copy the whole window through system memory on every frame.
+        AllowsTransparency = false;
         Background = Brushes.Transparent;
         ResizeMode = ResizeMode.NoResize;
         ShowInTaskbar = false;
@@ -26,7 +28,11 @@ internal sealed class PanelWindow : Window
         Width = 1;
         Height = 1;
         WindowStartupLocation = WindowStartupLocation.Manual;
-        SourceInitialized += (_, _) => WindowPlacement.MakeToolWindow(this);
+        SourceInitialized += (_, _) =>
+        {
+            WindowPlacement.MakeToolWindow(this);
+            DwmTransparency.Enable(this);
+        };
     }
 
     protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)

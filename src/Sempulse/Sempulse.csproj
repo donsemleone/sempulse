@@ -22,6 +22,15 @@
     <NoWarn>$(NoWarn);WFO0003</NoWarn>
   </PropertyGroup>
 
+  <!-- "dotnet publish -c Release -r win-x64" produces one self-contained Sempulse.exe. Compression stays off:
+       compressed bundles are unpacked into memory and roughly double the app's RAM use. -->
+  <PropertyGroup Condition="'$(RuntimeIdentifier)' != ''">
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+
   <!-- WPF and WinForms share type names (Application, Button, Point...); keep WinForms out of the global usings. -->
   <ItemGroup>
     <Using Remove="System.Windows.Forms" />

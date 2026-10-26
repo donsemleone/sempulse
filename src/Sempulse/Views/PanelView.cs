@@ -190,6 +190,7 @@ internal sealed class PanelView : Border
             Content = new LucideIcon("Settings", 15, Ui.Secondary),
         };
         button.SetBinding(ForegroundProxy.BrushProperty, new System.Windows.Data.Binding(nameof(Button.Foreground)) { Source = button });
+        System.Windows.Automation.AutomationProperties.SetName(button, "Ayarlar");
         button.Click += (_, _) => actions.ToggleSettings();
         return button;
     }
@@ -489,6 +490,7 @@ internal sealed class MediaGroupView : Grid
             Content = playIcon,
             ToolTip = $"{label}: oynat/duraklat",
         };
+        System.Windows.Automation.AutomationProperties.SetName(play, $"{label}: oynat/duraklat");
         play.Click += (_, _) => actions.MediaControl(target, "play-pause");
         var buttons = Ui.Stack(vertical ? Orientation.Vertical : Orientation.Horizontal, 4, previous, play, next);
         buttons.VerticalAlignment = VerticalAlignment.Center;

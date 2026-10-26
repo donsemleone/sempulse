@@ -42,6 +42,7 @@ internal static class Ui
             ToolTip = tooltip,
         };
         button.Content = new LucideIcon(icon, size, Primary);
+        System.Windows.Automation.AutomationProperties.SetName(button, tooltip);
         // The icon follows the button's foreground (white, or yellow for the active cat mode).
         button.SetBinding(ForegroundProxy.BrushProperty, new System.Windows.Data.Binding(nameof(Button.Foreground)) { Source = button });
         button.Click += (_, _) => onClick();

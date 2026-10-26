@@ -9,3 +9,5 @@ TestResults/
 .vscode/
 .idea/
 *.log
+out/
+dist/

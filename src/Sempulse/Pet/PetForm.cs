@@ -946,8 +946,34 @@ sealed class PetForm : Form
                         art[flip ? ArtWidth - 1 - zx : zx, zSpots[mark, 1] + row] = 'O';
                     }
 
+        using (Bitmap image = Draw(art, rotation, scale)) return image.GetHbitmap(Color.FromArgb(0));
+    }
+
+    // The same pixels the cat window shows, for the README pose sheet.
+    internal static Bitmap RenderPose(string pose, int scale, int zMarks = 0)
+    {
+        string[] frame = pose switch
+        {
+            "walk-a" => WalkA, "walk-b" => WalkB, "jump" => Jump, "puff" => PuffA, "sleep" => Sleep,
+            "yawn" => Yawn, "blink" => Blink, _ => Sit,
+        };
+        char[,] art = new char[ArtWidth, ArtHeight];
+        int top = ArtHeight - frame.Length;
+        for (int row = 0; row < frame.Length; row++)
+            for (int column = 0; column < ArtWidth && column < frame[row].Length; column++)
+                art[column, top + row] = frame[row][column];
+        int[,] zSpots = { { 21, 16 }, { 24, 10 }, { 27, 4 } };
+        for (int mark = 0; mark < zMarks; mark++)
+            for (int row = 0; row < ZGlyph.Length; row++)
+                for (int column = 0; column < ZGlyph[row].Length; column++)
+                    if (ZGlyph[row][column] == '#') art[zSpots[mark, 0] + column, zSpots[mark, 1] + row] = 'O';
+        return Draw(art, 0, scale);
+    }
+
+    static Bitmap Draw(char[,] art, int rotation, int scale)
+    {
         int outWidth = rotation % 2 == 0 ? ArtWidth : ArtHeight, outHeight = rotation % 2 == 0 ? ArtHeight : ArtWidth;
-        using (Bitmap image = new Bitmap(outWidth * scale, outHeight * scale, PixelFormat.Format32bppArgb))
+        Bitmap image = new Bitmap(outWidth * scale, outHeight * scale, PixelFormat.Format32bppArgb);
         {
             BitmapData data = image.LockBits(new Rectangle(0, 0, image.Width, image.Height), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
             int[] pixels = new int[image.Width * image.Height];
@@ -972,7 +998,7 @@ sealed class PetForm : Form
             }
             Marshal.Copy(pixels, 0, data.Scan0, pixels.Length);
             image.UnlockBits(data);
-            return image.GetHbitmap(Color.FromArgb(0));
+            return image;
         }
     }
 

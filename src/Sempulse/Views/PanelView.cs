@@ -138,28 +138,37 @@ internal sealed class PanelView : Border
 
     UIElement BuildWidget()
     {
+        // Two independent rows: stats beside the clock, media beside the desktop buttons.
+        static Grid Row(GridLength height)
+        {
+            var row = new Grid();
+            row.ColumnDefinitions.Add(new ColumnDefinition { Width = Star });
+            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(12) });
+            row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            return row;
+        }
         var grid = new Grid();
-        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = Star });
-        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(12) });
-        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
         grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
         grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(10) });
         grid.RowDefinitions.Add(new RowDefinition { Height = Star });
 
+        var top = Row(GridLength.Auto);
         var settingsButton = SettingsButton();
         settingsButton.Margin = new Thickness(0, 0, 12, 0);
-        var top = new StackPanel { Orientation = Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center };
-        top.Children.Add(settingsButton);
-        top.Children.Add(BuildStats(10));
-        Place(grid, top, 0, 0);
-
+        var stats = new StackPanel { Orientation = Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center };
+        stats.Children.Add(settingsButton);
+        stats.Children.Add(BuildStats(8));
+        Place(top, stats, 0);
         var clockSection = BuildClock();
         clockSection.MinWidth = 66;
         clockSection.HorizontalAlignment = HorizontalAlignment.Right;
-        Place(grid, clockSection, 2, 0);
+        Place(top, clockSection, 2);
+        Place(grid, top, 0, 0);
 
-        Place(grid, TopRule(BuildMedia()), 0, 2);
-        Place(grid, TopRule(BuildDesktopActions()), 2, 2);
+        var bottom = Row(Star);
+        Place(bottom, TopRule(BuildMedia()), 0);
+        Place(bottom, TopRule(BuildDesktopActions()), 2);
+        Place(grid, bottom, 0, 2);
         return grid;
     }
 
@@ -241,7 +250,7 @@ internal sealed class PanelView : Border
         gpu.Update(stats.GpuLoad);
         double? vramPercent = stats.VramTotal is > 0 && stats.VramUsed is ulong used ? used * 100.0 / stats.VramTotal.Value : null;
         vram.Update(vramPercent, stats.VramTotal is > 0 ? $"{FormatBytes(stats.VramUsed ?? 0)} / {FormatBytes(stats.VramTotal.Value)}" : null);
-        string suffix = vertical ? "" : "/s";
+        string suffix = vertical || widget ? "" : "/s"; // Narrow layouts drop the unit suffix to fit.
         netDown.Text = $"↓ {FormatBytes(stats.NetRx)}{suffix}";
         netUp.Text = $"↑ {FormatBytes(stats.NetTx)}{suffix}";
     }

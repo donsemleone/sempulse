@@ -40,6 +40,7 @@
   <ItemGroup>
     <Resource Include="Assets\app-icon.ico" />
     <InternalsVisibleTo Include="Sempulse.Tests" />
+    <InternalsVisibleTo Include="Sempulse.Screenshots" />
   </ItemGroup>
 
 </Project>

@@ -64,19 +64,19 @@ internal sealed class SettingsWindow : Window
     {
         var settings = current();
         content.Children.Clear();
-        content.Children.Add(Choice("Yerleşim", settings.Mode,
+        content.Children.Add(Choice("YERLEŞİM", settings.Mode,
             [(PanelMode.Widget, "Floating panel"), (PanelMode.Bar, "Edge bar")], value => s => s with { Mode = value }));
         if (settings.Mode == PanelMode.Bar)
-            content.Children.Add(Choice("Kenar", settings.Position,
+            content.Children.Add(Choice("KENAR", settings.Position,
                 [(BarEdge.Top, "Üst"), (BarEdge.Bottom, "Alt"), (BarEdge.Left, "Sol"), (BarEdge.Right, "Sağ")], value => s => s with { Position = value }));
-        content.Children.Add(Choice("Medya kontrolü", settings.MediaMode,
+        content.Children.Add(Choice("MEDYA KONTROLÜ", settings.MediaMode,
             [(MediaLayout.Separate, "Spotify ve diğer medya ayrı"), (MediaLayout.Unified, "Tek aktif medya")], value => s => s with { MediaMode = value }));
-        content.Children.Add(Choice("Masaüstü kedisi", settings.Pet, [(true, "Açık"), (false, "Kapalı")], value => s => s with { Pet = value }));
-        content.Children.Add(Choice("Windows ile başlat", Autostart.IsEnabled, [(true, "Açık"), (false, "Kapalı")], SetAutostart));
+        content.Children.Add(Choice("MASAÜSTÜ KEDİSİ", settings.Pet, [(true, "Açık"), (false, "Kapalı")], value => s => s with { Pet = value }));
+        content.Children.Add(Choice("WINDOWS İLE BAŞLAT", Autostart.IsEnabled, [(true, "Açık"), (false, "Kapalı")], SetAutostart));
         if (settings.Mode == PanelMode.Bar)
-            content.Children.Add(Range("Bar kalınlığı", settings.Thickness, 40, 120, " px", value => s => s with { Thickness = value }));
-        content.Children.Add(Range("Floating genişliği", settings.WidgetWidth, 520, 900, " px", value => s => s with { WidgetWidth = value }));
-        content.Children.Add(Range("Opaklık", settings.Opacity, 0, 100, "%", value => s => s with { Opacity = value }));
+            content.Children.Add(Range("BAR KALINLIĞI", settings.Thickness, 40, 120, " PX", value => s => s with { Thickness = value }));
+        content.Children.Add(Range("FLOATING GENİŞLİĞİ", settings.WidgetWidth, 520, 900, " PX", value => s => s with { WidgetWidth = value }));
+        content.Children.Add(Range("OPAKLIK", settings.Opacity, 0, 100, "%", value => s => s with { Opacity = value }));
 
         var quitButton = new Button
         {
@@ -91,7 +91,7 @@ internal sealed class SettingsWindow : Window
 
     static TextBlock Label(string text)
     {
-        var label = Ui.Text(text.ToUpper(CultureInfo.GetCultureInfo("tr-TR")), 11, Ui.Secondary);
+        var label = Ui.Text(text, 11, Ui.Secondary); // Written in capitals: culture casing would print "WİNDOWS".
         label.Style = (Style)Application.Current.FindResource("SettingLabel");
         return label;
     }
@@ -150,7 +150,7 @@ internal sealed class SettingsWindow : Window
         int committed = value;
         void Show(int draft)
         {
-            caption.Text = $"{label} ({draft}{unit})".ToUpper(CultureInfo.GetCultureInfo("tr-TR"));
+            caption.Text = $"{label} ({draft}{unit})";
             number.Text = draft.ToString(CultureInfo.InvariantCulture);
         }
         void Commit(int draft)

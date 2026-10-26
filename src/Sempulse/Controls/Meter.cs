@@ -72,8 +72,16 @@ internal sealed class Meter : StackPanel
         double length = Math.Round(trackLength * clamped / 100);
         if (length == shownLength) return; // Same pixel: no redraw of the (transparent, fully repainted) window.
         shownLength = length;
+        var property = style == MeterStyle.Vertical ? HeightProperty : WidthProperty;
+        if (!IsLoaded)
+        {
+            // First value (or an offscreen render): no slide in from zero.
+            fill.BeginAnimation(property, null);
+            fill.SetValue(property, length);
+            return;
+        }
         var animation = new DoubleAnimation(length, TimeSpan.FromMilliseconds(300)) { EasingFunction = new QuadraticEase() };
         Timeline.SetDesiredFrameRate(animation, 30);
-        fill.BeginAnimation(style == MeterStyle.Vertical ? HeightProperty : WidthProperty, animation);
+        fill.BeginAnimation(property, animation);
     }
 }
